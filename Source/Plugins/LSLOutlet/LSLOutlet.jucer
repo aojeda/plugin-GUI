@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="XmaoT8" name="LSLOutlet" projectType="openephysplug" version="1.0.0"
+              bundleIdentifier="com.yourcompany.LSLPlugin" includeBinaryInAppConfig="1"
+              pluginName="LSLOutlet" pluginDesc="LSLOutlet" pluginManufacturer="yourcompany"
+              pluginManufacturerCode="Manu" pluginCode="Xmao" openEphysPluginType="1"
+              openEphysPluginProcessorType="3" openEphysFileSourcePluginSupportedExtensions=""
+              openEphysPluginDesiredWidth="150" buildVST="0" buildVST3="0"
+              jucerVersion="4.2.1">
+  <MAINGROUP id="AY8cc8" name="LSLOutlet">
+    <GROUP id="{6CC2A033-47CC-74F6-3315-667FBB5240D1}" name="Source">
+      <FILE id="DOPzE5" name="OpenEphysLib.cpp" compile="1" resource="0"
+            file="Source/OpenEphysLib.cpp"/>
+      <FILE id="SqlGoP" name="LslpluginProcessor.cpp" compile="1" resource="0"
+            file="Source/LslpluginProcessor.cpp"/>
+      <FILE id="RjO8cS" name="LslpluginProcessor.h" compile="0" resource="0"
+            file="Source/LslpluginProcessor.h"/>
+      <FILE id="ZqM0sY" name="LslpluginProcessorEditor.cpp" compile="1" resource="0"
+            file="Source/LslpluginProcessorEditor.cpp"/>
+      <FILE id="nDdyUl" name="LslpluginProcessorEditor.h" compile="0" resource="0"
+            file="Source/LslpluginProcessorEditor.h"/>
+      <FILE id="MusVJy" name="LslpluginProcessorContentComponent.cpp" compile="1"
+            resource="0" file="Source/LslpluginProcessorContentComponent.cpp"/>
+      <FILE id="Vl3i3E" name="LslpluginProcessorContentComponent.h" compile="0"
+            resource="0" file="Source/LslpluginProcessorContentComponent.h"/>
+    </GROUP>
+  </MAINGROUP>
+  <EXPORTFORMATS>
+    <LINUX_MAKE targetFolder="Builds/LinuxMakefile">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Debug" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="1"
+                       targetName="LSLOutlet"/>
+        <CONFIGURATION name="Release" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="3"
+                       targetName="LSLOutlet"/>
+      </CONFIGURATIONS>
+    </LINUX_MAKE>
+  </EXPORTFORMATS>
+  <MODULES/>
+  <JUCEOPTIONS JUCE_QUICKTIME="disabled"/>
+  <OPENEPHYSPLUGIN/>
+  <LIVE_SETTINGS>
+    <LINUX/>
+  </LIVE_SETTINGS>
+</JUCERPROJECT>

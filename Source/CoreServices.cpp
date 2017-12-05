@@ -77,12 +77,12 @@ void highlightEditor(GenericEditor* ed)
     getEditorViewport()->makeEditorVisible(ed);
 }
 
-int64 getGlobalTimestamp()
+juce::int64 getGlobalTimestamp()
 {
     return getMessageCenter()->getTimestamp();
 }
 
-int64 getSoftwareTimestamp()
+juce::int64 getSoftwareTimestamp()
 {
 	return getMessageCenter()->getTimestamp(true);
 }
@@ -159,7 +159,7 @@ const char* getApplicationResource(const char* name, int& size)
 {
 	return BinaryData::getNamedResource(name, size);
 }
-    
+
 File getDefaultUserSaveDirectory()
 {
 #if defined(__APPLE__)

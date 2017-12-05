@@ -504,15 +504,15 @@ public:
     void setNumSamples (MidiBuffer&, int numSamples);
 
     /** Used to get the timestamp for a given buffer, for a given channel. */
-    int64 getTimestamp (int channelNumber) const;
+    juce::int64 getTimestamp (int channelNumber) const;
 
     /** Used to set the timestamp for a given buffer, for a given source node. */
-    void setTimestamp (MidiBuffer&, int64 timestamp);
+    void setTimestamp (MidiBuffer&, juce::int64 timestamp);
 
     PluginProcessorType getProcessorType() const;
 
     std::map<uint8, int> numSamples;
-    std::map<uint8, int64> timestamps;
+    std::map<uint8, juce::int64> timestamps;
 
 
 protected:

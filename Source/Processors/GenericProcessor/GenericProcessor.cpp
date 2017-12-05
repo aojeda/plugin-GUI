@@ -579,12 +579,12 @@ void GenericProcessor::setNumSamples (MidiBuffer& events, int sampleIndex)
 
 
 /** Used to get the timestamp for a given buffer, for a given source node. */
-int64 GenericProcessor::getTimestamp (int channelNum) const
+juce::int64 GenericProcessor::getTimestamp (int channelNum) const
 {
     int sourceNodeId = 0;
-    int64 ts         = 0;
+    juce::int64 ts         = 0;
 
-    if (channelNum >= 0 
+    if (channelNum >= 0
         && channelNum < channels.size())
     {
         sourceNodeId = channels[channelNum]->sourceNodeId;
@@ -608,7 +608,7 @@ int64 GenericProcessor::getTimestamp (int channelNum) const
 
 
 /** Used to set the timestamp for a given buffer, for a given channel. */
-void GenericProcessor::setTimestamp (MidiBuffer& events, int64 timestamp)
+void GenericProcessor::setTimestamp (MidiBuffer& events, juce::int64 timestamp)
 {
     //std::cout << "Setting timestamp to " << timestamp << std:;endl;
     m_isTimestampSet = true;
@@ -632,11 +632,11 @@ void GenericProcessor::setTimestamp (MidiBuffer& events, int64 timestamp)
     if (m_isNeedsToSendTimestampMessage)
     {
         String eventString = "Processor: "
-                                + String (getNodeId()) 
-                                + " start time: " 
-                                + String (timestamp) 
-                                + "@" 
-                                + String (getSampleRate()) 
+                                + String (getNodeId())
+                                + " start time: "
+                                + String (timestamp)
+                                + "@"
+                                + String (getSampleRate())
                                 + "Hz";
 
         CharPointer_UTF8 data = eventString.toUTF8();
@@ -692,7 +692,7 @@ int GenericProcessor::processEventBuffer (MidiBuffer& events)
             }
             else if (*dataptr == TIMESTAMP)
             {
-                int64 ts;
+                juce::int64 ts;
                 memcpy (&ts, dataptr + 6, 8);
 
                 uint8 sourceNodeId;
@@ -1084,4 +1084,3 @@ bool GenericProcessor::disable()
 {
     return true;
 }
-

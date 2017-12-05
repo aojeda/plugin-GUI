@@ -61,10 +61,10 @@ PLUGIN_API void highlightEditor(GenericEditor* ed);
 /** Gets the timestamp selected on the MessageCenter interface
 Defaults to the first hardware timestamp source or the software one if
 no hardware timestamping is present*/
-PLUGIN_API int64 getGlobalTimestamp();
+PLUGIN_API juce::int64 getGlobalTimestamp();
 
 /** Gets the software timestamp based on a high resolution timer aligned to the start of each processing block */
-PLUGIN_API int64 getSoftwareTimestamp();
+PLUGIN_API juce::int64 getSoftwareTimestamp();
 
 /** Set new recording directory */
 PLUGIN_API void setRecordingDirectory(String dir);
@@ -81,7 +81,7 @@ PLUGIN_API void setAppendTextToRecordingDir(String text);
 /** Gets the ID fo the selected Record Engine*/
 PLUGIN_API String getSelectedRecordEngineId();
 
-/** Sets a specific RecordEngine to be used based on its id. 
+/** Sets a specific RecordEngine to be used based on its id.
 Return true if there is an engine with the specified ID and it's possible to
 change the current engine or false otherwise. */
 PLUGIN_API bool setSelectedRecordEngineId(String id);
@@ -104,7 +104,7 @@ PLUGIN_API int addSpikeElectrode(SpikeRecordInfo* elec);
 };
 
 PLUGIN_API const char* getApplicationResource(const char* name, int& size);
-    
+
 /** Gets the default directory for user-initiated file saving/loading */
 PLUGIN_API File getDefaultUserSaveDirectory();
 

@@ -130,7 +130,7 @@ void FrameGrabberEditor::updateDevices()
 void FrameGrabberEditor::timerCallback()
 {
 	FrameGrabber* proc = (FrameGrabber*) getProcessor();
-	juce::int64 frameCount = proc->getFrameCount();
+	float frameCount = proc->getFrameCounter();
 	int fps = frameCount - lastFrameCount;
 	lastFrameCount = frameCount;
 	fpsLabel->setText(String("FPS: ") + String(fps), dontSendNotification);

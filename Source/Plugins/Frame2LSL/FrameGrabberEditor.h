@@ -54,7 +54,7 @@ class FrameGrabberEditor : public GenericEditor, public ComboBox::Listener
     ScopedPointer<Label> colorLabel;
 	  ScopedPointer<Label> fpsLabel;
 	  ScopedPointer<UtilityButton> refreshButton;
-	  juce::int64 lastFrameCount;
+	  float lastFrameCount;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FrameGrabberEditor);
 };
 

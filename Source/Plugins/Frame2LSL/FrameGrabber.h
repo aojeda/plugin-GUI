@@ -52,7 +52,7 @@ public:
 
 	  //void startRecording();
 	  //void stopRecording();
-    void createOutlet();
+    void createOutlets();
 	  void run();
 	  AudioProcessorEditor* createEditor();
 	  void updateSettings();
@@ -65,23 +65,28 @@ public:
 	  int getCurrentFormatIndex();
 	  void setColorMode(int value);
 	  int getColorMode();
-	  juce::int64 getFrameCount();
+	  float getFrameCounter();
+    void countFrame();
 	  void saveCustomParametersToXml(XmlElement* parentElement);
 	  void loadCustomParametersFromXml();
     juce::int64 fps;
+    std::string getFilename();
+    void setFilename(std::string streamName);
 
 private:
+  std::string filename;
   std::string streamName;
   std::string sourceID;
   int numberOfPixels;
   int* sample;
-  lsl::stream_outlet* outlet = NULL;
+  float mrk[1];
+  lsl::stream_outlet* rawVideoOutlet = NULL;
+  lsl::stream_outlet* fameMarkerOutlet = NULL;
 
 	Camera* camera;
-	juce::int64 frameCounter;
+	float frameCounter=1;
 	bool threadRunning;
 	int colorMode;
-	bool resetFrameCounter;
 	int currentFormatIndex;
 	CriticalSection lock;
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FrameGrabber);

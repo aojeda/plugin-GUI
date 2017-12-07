@@ -32,6 +32,8 @@
 #include <unistd.h>
 #include <limits.h>
 #include <time.h>
+#include <sys/types.h>
+#include <pwd.h>
 
 void pause(int milliseconds) // Cross-platform sleep function
 {
@@ -43,18 +45,21 @@ void pause(int milliseconds) // Cross-platform sleep function
 
 FrameGrabber::FrameGrabber()
     : GenericProcessor("Frame2LSL"), camera(NULL), currentFormatIndex(-1),
-	  frameCounter(0), Thread("FrameGrabberThread"), colorMode(ColorMode::RGB),
-		resetFrameCounter(false){
+	  frameCounter(1), Thread("FrameGrabberThread"), colorMode(ColorMode::RGB){
       setProcessorType (PROCESSOR_TYPE_SOURCE);
     }
 
 FrameGrabber::~FrameGrabber()
 {
 	stopCamera();
-	std::cout << "Camera closed.\n";
-	if (this->outlet != NULL){
-		delete this->outlet;
-		std::cout << "LSL outlet closed.\n";
+	std::cout << "Camera closed\n";
+	if (this->rawVideoOutlet != NULL){
+		delete this->rawVideoOutlet;
+		std::cout << "rawVideoOutlet closed\n";
+	}
+  if (this->fameMarkerOutlet != NULL){
+		delete this->fameMarkerOutlet;
+		std::cout << "fameMarkerOutlet closed\n";
 	}
 }
 
@@ -72,15 +77,22 @@ void FrameGrabber::updateSettings()
 
 void FrameGrabber::process(AudioSampleBuffer& buffer, MidiBuffer& events){}
 
-juce::int64 FrameGrabber::getFrameCount()
+float FrameGrabber::getFrameCounter()
 {
-	int count;
+	float count;
 	lock.enter();
 	count = frameCounter;
 	lock.exit();
 	return count;
 }
 
+void FrameGrabber::countFrame()
+{
+	int count;
+	lock.enter();
+	frameCounter++;
+	lock.exit();
+}
 
 int FrameGrabber::startCamera(int fmt_index)
 {
@@ -104,9 +116,9 @@ int FrameGrabber::startCamera(int fmt_index)
 	{
 		std::cout << "FrameGrabber: opened camera " << camera->get_format()->to_string() << "\n";
 		currentFormatIndex = fmt_index;
-		threadRunning = true;
 		fps = (int)(camera->get_format()->denominator/camera->get_format()->numerator);
-		startThread();
+    threadRunning = true;
+    startThread();
 	}
 	return 0;
 }
@@ -153,22 +165,42 @@ int FrameGrabber::getColorMode()
 	return mode;
 }
 
-void FrameGrabber::createOutlet ()
+std::string FrameGrabber::getFilename(){
+  char hostname[HOST_NAME_MAX];
+	gethostname(hostname, HOST_NAME_MAX);
+	streamName = std::string("Video_")+std::string(hostname);
+  const char *homedir = getenv("HOME");
+  if (homedir == NULL)
+    homedir = getpwuid(getuid())->pw_dir;
+  return std::string(homedir)+"/"+streamName+".avi";
+}
+
+void FrameGrabber::setFilename(std::string streamName){
+  const char *homedir = getenv("HOME");
+  if ( homedir == NULL )
+    homedir = getpwuid(getuid())->pw_dir;
+  this->filename = std::string(homedir)+"/"+streamName+".avi";
+}
+
+void FrameGrabber::createOutlets()
 {
 	lock.enter();
 	bool cMode = colorMode;
 	lock.exit();
 	cv::Mat frame  = camera->read_frame();
   numberOfPixels = frame.total();
-	//numberOfPixels = frame.cols*frame.rows;
 	std::cout<< "Channels: "<<frame.channels()<<"\n";
 
 	int elementsPerFrame = (cMode)? numberOfPixels*3: numberOfPixels;
+  this->sample = new int[elementsPerFrame];
+  for(int k=0;k<elementsPerFrame;k++)
+    this->sample[k] = 0;
 
 	char hostname[HOST_NAME_MAX];
 	gethostname(hostname, HOST_NAME_MAX);
 	streamName = std::string("Video_")+std::string(hostname);
 	sourceID   = std::string("Video_")+std::string(hostname);
+  //this->setFilename(streamName);
 	std::cout << "Creating outlet "<< streamName << "...\n";
 
 	// Create LSL info
@@ -177,13 +209,20 @@ void FrameGrabber::createOutlet ()
 	info.desc().append_child_value("rows", juce::String(frame.rows).toStdString());
 	info.desc().append_child_value("color", juce::String(cMode).toStdString());
 
-	this->sample = new int[elementsPerFrame];
-  for(int k=0;k<elementsPerFrame;k++)
-    this->sample[k] = 0;
-	// Create LSL outlet
-  if(this->outlet != NULL)
-    delete this->outlet;
-  this->outlet = new lsl::stream_outlet(info);
+	// Create LSL outlets
+  if(this->rawVideoOutlet != NULL)
+    delete this->rawVideoOutlet;
+  this->rawVideoOutlet = new lsl::stream_outlet(info);
+
+  streamName = std::string("FrameMarker_")+std::string(hostname);
+	sourceID   = std::string("FrameMarker_")+std::string(hostname);
+	std::cout << "Creating outlet "<< streamName << "...\n";
+  lsl::stream_info info2(streamName,"videostream",1,(int)fps,lsl::cf_float32,sourceID);
+  info2.desc().append_child_value("filename", this->getFilename());
+  if(this->fameMarkerOutlet != NULL)
+    delete this->fameMarkerOutlet;
+  this->fameMarkerOutlet = new lsl::stream_outlet(info2);
+
   std::cout<< "Number of pixels: " << this->numberOfPixels <<"\n";
   std::cout<< "Frames per second: " << fps <<"\n";
   std::cout<< "done\n";
@@ -220,12 +259,19 @@ void FrameGrabber::run()
 	bool cMode = colorMode;
 	lock.exit();
 
-	if (this->outlet == NULL)
-		this->createOutlet();
+  int codec = CV_FOURCC('M', 'P', 'E', 'G');
+  cv::VideoWriter frameWriter;
+  frameWriter.open(this->getFilename(), codec,//camera->get_format()->pixelformat,
+    (float)fps, cv::Size(camera->get_format()->width, camera->get_format()->height), cMode);
+
+
+  if (this->rawVideoOutlet == NULL)
+		this->createOutlets();
 
 	std::cout<< "Video capture thread running...\n";
+  std::cout<< "Saving frames in: "<<this->getFilename()<<"\n";
   while (threadRunning){
-		if (camera != NULL && camera->is_running()){
+    if (camera != NULL && camera->is_running()){
 			cv::Mat frame = camera->read_frame();
 			if (!frame.empty()){
 				if(!cMode){
@@ -233,18 +279,27 @@ void FrameGrabber::run()
 					cvtColor( frame, grayFrame, CV_BGR2GRAY );
 					frame = grayFrame;
 				}
-
 				cv::imshow("Frame2LSL", frame);
 				if (frame.channels()>2)
-					ReadRGB(frame, this->sample);
+					ReadRGB(frame, sample);
 				else
-					ReadGray(frame, this->sample);
-				this->outlet->push_sample(this->sample);
+					ReadGray(frame, sample);
+
+        if(editor->acquisitionIsActive){
+          *(mrk) = getFrameCounter();
+          this->rawVideoOutlet->push_sample(sample);
+          this->fameMarkerOutlet->push_sample(mrk);
+          if(frameWriter.isOpened()){
+            frameWriter << frame;
+            countFrame();
+          }
+        }
 				cv::waitKey(1);
-				frameCounter++;
 			}
 		}
   }
+  std::cout<<"Video file closed\n";
+  frameWriter.release();
   return;
 }
 

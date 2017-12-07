@@ -6,9 +6,9 @@ The purpose of the Frame2LSL plugin is twofold:
 
 The Frame2LSL plugin is based on [FrameGrabber](https://github.com/arnefmeyer/FrameGrabberPlugin), we deeply thank the authors of the latter.
 
-By dropping the plugin onto the GUI signal chain area two LSL outlets are created: 1) one named "Video"-`hostname` that broadcasts the raw frames for online processing, 2) one named "FrameMarker"-`hostname` that sends frame markers that allow synchronizing the video and LFP data. Here we use `hostname` as the name of the computer running the GUI.
+By dropping the plugin onto the GUI signal chain area two LSL outlets are created: 1) one named "Video"-`hostname` that broadcasts the raw frames for online processing, 2) one named "FrameMarker"-`hostname` that allows synchronizing the video and LFP data. Here we use `hostname` as the name of the computer running the GUI.
 
-To save LSL data to a file we can use  [OpenEphysLSLRecorder](https://bitbucket.org/neatlabs/lslrecorder/src/eb6db559790e11b1abf8bdf4c3dfd874e16a06b3/build/OpenEphysLSLRecorder.sh?at=master&fileviewer=file-view-default).
+To save LSL data acquired with the Open Ephys GUI to a file we can use  [OpenEphysLSLRecorder](https://bitbucket.org/neatlabs/lslrecorder/src/eb6db559790e11b1abf8bdf4c3dfd874e16a06b3/build/OpenEphysLSLRecorder.sh?at=master&fileviewer=file-view-default).
 
 ## Installation ##
 At the moment the plugin supports out of the box the GNU/Linux OS only, although

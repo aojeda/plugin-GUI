@@ -13,7 +13,7 @@ LSL (C/C++, C#, Python, MATLAB, Java), as well as saving data using the multimod
 file format *xdf* for offline analysis. *xdf* files can be loaded into [MATLAB or Python](https://github.com/sccn/xdf)
 and can be reviewed and further processed within the EEGLAB environment using the [MoBILAB](https://sccn.ucsd.edu/wiki/MoBILAB) toolbox.
 
-By dropping the plugin onto the GUI signal chain area, an LSL outlet is created, which is named using the following convention "LSP"-`hostname`, where `hostname` is the name of the computer running the GUI. By default, the outlet will send to LSL all the channels received from the source node connected to it. All the metadata such as channel names and sampling rate are obtained automatically from the source node and passed on to LSL.
+By dropping the plugin onto the GUI signal chain area, an LSL outlet is created, which is named using the following convention "LFP"-`hostname`, where `hostname` is the name of the computer running the GUI. By default, the outlet will send to LSL all the channels received from the source node connected to it. All the metadata such as channel names and sampling rate are obtained automatically from the source node and passed on to LSL.
 
 ## Installation ##
 At the moment the plugin supports out of the box the GNU/Linux OS only, although

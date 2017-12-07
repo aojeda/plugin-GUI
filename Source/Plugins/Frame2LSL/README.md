@@ -20,4 +20,4 @@ cd ../../Builds/Linux/
 The `setup.sh` script above will compile `open-ephys` and all the plugins (including ours). At this point you are free to copy/move the newly created `build/` folder out of the `plugin-GUI` project folder to any other location for deployment.  
 
 ## Authors ##
-The **LSLOutlet** plugin was created and is maintained by engineers and scientists at [NEATLabs](http://neatlabs.ucsd.edu/index.html) with the University of California San Diego, and is part of a wider suite of programs created for supporting closed-loop brain-machine interfaces for humans and implanted animals.
+The **Frame2LSL** plugin was created and is maintained by engineers and scientists at [NEATLabs](http://neatlabs.ucsd.edu/index.html) with the University of California San Diego, and is part of a wider suite of programs created for supporting closed-loop brain-machine interfaces for humans and implanted animals.

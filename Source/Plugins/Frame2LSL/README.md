@@ -1,62 +1,23 @@
-# FrameGrabber
+# Frame2LSL
 
-A simple video4linux2-based video frame grabber plugin for the open-ephys 
-[plugin-GUI](https://github.com/open-ephys/plugin-GUI/). It retrieves frames 
-from any device supported by [v4l2](http://linuxtv.org/downloads/v4l-dvb-apis/) 
-and displays them using [opencv](http://opencv.org/). Moreover, 
-frames can be saved to disk (in jpg format) together with open-ephys hardware 
-time stamps making it easy to synchronize frames and recorded data later on. 
-Depending on your camera this approach should be useful for most 
-(behavioral) tracking experiments. In case the experiment requires very precise 
-time stamps, e.g., high-speed whisker tracking, it might be a good idea to use a 
-camera that can send TTL pulses for each frame.
+The purpose of the Frame2LSL plugin is twofold:
+1. Stream to [LSL](https://github.com/sccn/labstreaminglayer) raw frames captured by a camera that supports [v4l2](http://linuxtv.org/downloads/v4l-dvb-apis/) for online  behavior tracking.
+2. Save the captured frames to a video file in a compressed format and sends to LSL frame markers to automatically synchronize the electrophysiological data and the video for offline analysis.
 
-Currently, the plugin only runs under Linux. However, contributions to make it 
-also run under Windows (e.g., using directshow) are highly welcome.
+The Frame2LSL plugin is based on [FrameGrabber](https://github.com/arnefmeyer/FrameGrabberPlugin), we deeply thank the authors of the latter.
 
-What should work:
+## Installation ##
+At the moment the plugin supports out of the box the GNU/Linux OS only, although
+it can be compiled for other architectures using the OS-specific LSL library. The
+LSL binary for Linux is already included. To compile the project run the following commands in a bash terminal:
+```bash
+cd path/to/plugin-GUI
+cd Resources/Scripts/
+./install_linux_dependencies.sh
+cd ../../Builds/Linux/
+./setup.sh
+```
+The `setup.sh` script above will compile `open-ephys` and all the plugins (including ours). At this point you are free to copy/move the newly created `build/` folder out of the `plugin-GUI` project folder to any other location for deployment.  
 
-- capturing frames from any v4l2 supported camera (using mmap; pixel formats: YUYV, MJPG)
-- saving frames in jpeg format; the file name format is "frame\_{frame\_index}\_{experiment\_number}\_{recording\_number}.jpg"
-- saving frame index, experiment number, recording number, and hardware/software time stamps to a separate csv file to make post-processing easier
-- basic controls via ui (image quality, color, recording mode, frame counter resetting, frame directory name)
-- saving/loading parameters
-
-To-do:
-
-- add further video APIs, e.g., directshow
-- python/matlab functions to read frames and timestamps (including optional interpolation)
-
-## Dependencies
-
-This plugin requires the following libraries
-
-- video4linux2 (i.e. libv4l-0 and libv4l-dev under Ubuntu and Linux Mint)
-- opencv (version 2.4.x; core, dev, and highgui packages)
-
-## Installation
-
-Copy the FrameGrabber folder to the plugin folder of your GUI. Then build 
-the all plugins as described in the [wiki](https://open-ephys.atlassian.net/wiki/display/OEW/Linux).
-
-**Important** 
-It seems that there is a data type clash between JUCE and opencv. In my case, I 
-had to replace all "int64" by "juce::int64" in 
-[CoreServices.h](https://github.com/open-ephys/plugin-GUI/blob/master/Source/CoreServices.h), 
-[CoreServices.cpp](https://github.com/open-ephys/plugin-GUI/blob/master/Source/CoreServices.cpp), 
-[GenericProcessor.h](https://github.com/open-ephys/plugin-GUI/blob/master/Source/Processors/GenericProcessor/GenericProcessor.h),
-and [GenericProcessor.cpp](https://github.com/open-ephys/plugin-GUI/blob/master/Source/Processors/GenericProcessor/GenericProcessor.cpp).
-Note that this does not affect the rest of the GUI as it is using the juce 
-namespace anyway.
-
-## Changing camera parameters
-
-The v4l2 library comes with some tools that can be used to control camera 
-parameters. The easiest way to see all available v4l2 controls is to use the 
-v4l2-ctl tool from cmdline:
-
-*v4l2-ctl --all*
-
-An alternative is to use [guvcview](http://guvcview.sourceforge.net).
-
-
+## Authors ##
+The **LSLOutlet** plugin was created and is maintained by engineers and scientists at [NEATLabs](http://neatlabs.ucsd.edu/index.html) with the University of California San Diego, and is part of a wider suite of programs created for supporting closed-loop brain-machine interfaces for humans and implanted animals.

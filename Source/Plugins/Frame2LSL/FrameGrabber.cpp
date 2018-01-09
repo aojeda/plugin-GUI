@@ -165,14 +165,22 @@ int FrameGrabber::getColorMode()
 	return mode;
 }
 
+std::string FrameGrabber::getStreamLastName(){
+  char hostname[HOST_NAME_MAX];
+	gethostname(hostname, HOST_NAME_MAX);
+	std::string lastName = std::string((const char*)camera->get_format()->card)+"_"+std::string(hostname);
+  std::transform(lastName.begin(), lastName.end(), lastName.begin(), [](char ch){return ch==' '?'_':ch;});
+  return lastName;
+}
+
 std::string FrameGrabber::getFilename(){
   char hostname[HOST_NAME_MAX];
 	gethostname(hostname, HOST_NAME_MAX);
-	streamName = std::string("Video_")+std::string(hostname);
+	streamName = std::string("FrameMarker_")+getStreamLastName();
   const char *homedir = getenv("HOME");
   if (homedir == NULL)
     homedir = getpwuid(getuid())->pw_dir;
-  return std::string(homedir)+"/"+streamName+".avi";
+  return std::string(homedir)+"/"+streamName+".ogv";
 }
 
 void FrameGrabber::setFilename(std::string streamName){
@@ -198,13 +206,12 @@ void FrameGrabber::createOutlets()
 
 	char hostname[HOST_NAME_MAX];
 	gethostname(hostname, HOST_NAME_MAX);
-	streamName = std::string("Video_")+std::string(hostname);
-	sourceID   = std::string("Video_")+std::string(hostname);
-  //this->setFilename(streamName);
+	streamName = std::string("Video_")+getStreamLastName();
+	sourceID   = std::string("Video_")+getStreamLastName();
 	std::cout << "Creating outlet "<< streamName << "...\n";
 
 	// Create LSL info
-  lsl::stream_info info(streamName,"RawVideo",elementsPerFrame,(int)fps,lsl::cf_int8,sourceID);
+  lsl::stream_info info(streamName,"RawVideo_"+getStreamLastName(),elementsPerFrame,(int)fps,lsl::cf_int8,sourceID);
 	info.desc().append_child_value("cols", juce::String(frame.cols).toStdString());
 	info.desc().append_child_value("rows", juce::String(frame.rows).toStdString());
 	info.desc().append_child_value("color", juce::String(cMode).toStdString());
@@ -214,8 +221,8 @@ void FrameGrabber::createOutlets()
     delete this->rawVideoOutlet;
   this->rawVideoOutlet = new lsl::stream_outlet(info);
 
-  streamName = std::string("FrameMarker_")+std::string(hostname);
-	sourceID   = std::string("FrameMarker_")+std::string(hostname);
+  streamName = std::string("FrameMarker_")+getStreamLastName();
+	sourceID   = std::string("FrameMarker_")+getStreamLastName();
 	std::cout << "Creating outlet "<< streamName << "...\n";
   lsl::stream_info info2(streamName,"videostream",1,(int)fps,lsl::cf_float32,sourceID);
   info2.desc().append_child_value("filename", this->getFilename());
@@ -259,7 +266,10 @@ void FrameGrabber::run()
 	bool cMode = colorMode;
 	lock.exit();
 
-  int codec = CV_FOURCC('M', 'P', 'E', 'G');
+  std::string windowName = getStreamLastName();
+  cv::namedWindow(windowName);
+  //int codec = CV_FOURCC('M', 'P', 'E', 'G');
+  int codec = CV_FOURCC('t', 'h', 'e', 'o');
   cv::VideoWriter frameWriter;
   frameWriter.open(this->getFilename(), codec,//camera->get_format()->pixelformat,
     (float)fps, cv::Size(camera->get_format()->width, camera->get_format()->height), cMode);
@@ -279,7 +289,7 @@ void FrameGrabber::run()
 					cvtColor( frame, grayFrame, CV_BGR2GRAY );
 					frame = grayFrame;
 				}
-				cv::imshow("Frame2LSL", frame);
+				cv::imshow(windowName, frame);
 				if (frame.channels()>2)
 					ReadRGB(frame, sample);
 				else

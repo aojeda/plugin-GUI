@@ -70,6 +70,7 @@ public:
 	  void saveCustomParametersToXml(XmlElement* parentElement);
 	  void loadCustomParametersFromXml();
     juce::int64 fps;
+    std::string getStreamLastName();
     std::string getFilename();
     void setFilename(std::string streamName);
 

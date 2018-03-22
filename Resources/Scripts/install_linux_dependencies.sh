@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# This script installs required packages using apt-get
+# It must be run with sudo. Example:
+# sudo bash install_linux_dependencies.sh
+
 # install g++
 apt-get -y install build-essential
 

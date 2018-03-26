@@ -23,6 +23,8 @@ LSL binary for Linux is already included. To compile the project run the followi
 cd path/to/plugin-GUI
 cd Resources/Scripts/
 ./install_linux_dependencies.sh
+cp 40-open-ephys.rules /etc/udev/rules.d/
+service udev restart
 cd ../../Builds/Linux/
 ./setup.sh
 ```

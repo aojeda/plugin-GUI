@@ -68,7 +68,7 @@ void LSLOutlet::createOutlet ()
 }
 
 
-void LSLOutlet::process(AudioSampleBuffer& buffer, MidiBuffer& eventBuffer)
+void LSLOutlet::process(AudioSampleBuffer& buffer)
 {
   if(this->outlet == NULL)
     this->createOutlet();

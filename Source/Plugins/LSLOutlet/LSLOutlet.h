@@ -25,7 +25,7 @@ public:
     AudioProcessorEditor* createEditor() override;
 
     void createOutlet ();
-    void process (AudioSampleBuffer& buffer, MidiBuffer& eventBuffer) override;
+    void process (AudioSampleBuffer& buffer) override;
 
     std::string streamName;
     std::string sourceID;
